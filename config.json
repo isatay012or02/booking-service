@@ -1,0 +1,23 @@
+{
+  "Http": {
+    "Port":8080,
+    "GIN": {
+      "ReleaseMode": false,
+      "UseLogger": true,
+      "UseRecovery": true
+    },
+    "ProfilingEnabled": true,
+    "StopTimeout": 5000
+  },
+  "DB": {
+    "ConnectionString": "host=localhost port=5432 user=postgres dbname=FTGO password=IamIsa7292",
+    "MaxOpenConns": 80,
+    "MaxIdleConns": 9,
+    "LogMode": true
+  },
+  "SwaggerUI": {
+    "PageTitle": "booking",
+    "Host": "http://localhost:5994",
+    "Description": "API for booking a flight"
+  }
+}

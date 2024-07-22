@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"booking-service/internal/domain/request"
 	"booking-service/internal/ports"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -14,20 +16,19 @@ func NewBookingHandler(service ports.BookingService) *BookingHandler {
 	return &BookingHandler{service: service}
 }
 
-func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		UserID   string `json:"user_id"`
-		FlightID string `json:"flight_id"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+func (h *BookingHandler) CreateBooking(ctx *gin.Context) {
+	var req request.CreateBooking
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	booking, err := h.service.CreateBooking(req.UserID, req.FlightID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		ctx.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	json.NewEncoder(w).Encode(booking)
+
+	ctx.JSON(http.StatusOK, booking)
+	return
 }
