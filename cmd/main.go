@@ -2,7 +2,6 @@ package main
 
 import (
 	"booking-service/config"
-	"booking-service/internal/adapters/db"
 	"booking-service/internal/adapters/http"
 	"booking-service/internal/adapters/repository"
 	"booking-service/internal/application"
@@ -14,11 +13,17 @@ import (
 )
 
 func main() {
-	configuration, err := config.Init(config.DBSettings{}.ConnectionString)
+	//configuration, err := config.Init(config.DBSettings{}.ConnectionString)
 
-	repodb, err := db.NewDB(config.DBSettings{})
+	repoDB, err := repository.NewDB(config.DBSettings{})
+	if err != nil {
+		panic(err)
+	}
 
-	repo := repository.NewBookingRepository(repodb)
+	repo, err := repository.NewBookingRepository(repoDB)
+	if err != nil {
+		panic(err)
+	}
 
 	service := application.NewBookingService(repo)
 
@@ -42,10 +47,10 @@ func main() {
 	case q := <-quit:
 		{
 			fmt.Printf("receive signal %s, stopping server...\n", q.String())
-			appLoger.ServerInfo("main", fmt.Sprintf("receive signal %s, stopping server...\n", q.String()))
+			//appLoger.ServerInfo("main", fmt.Sprintf("receive signal %s, stopping server...\n", q.String()))
 			if err = srv.Stop(); err != nil {
 				fmt.Printf("stop server error: %s\n", err.Error())
-				appLoger.ServerError("main", err.Error(), "stop server error")
+				//appLoger.ServerError("main", err.Error(), "stop server error")
 			}
 		}
 	}

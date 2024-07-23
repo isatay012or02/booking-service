@@ -7,6 +7,7 @@ import (
 	"booking-service/internal/ports"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
@@ -32,16 +33,20 @@ func NewBookingHandler(service ports.BookingService) *BookingHandler {
 func (h *BookingHandler) CreateBooking(ctx *gin.Context) {
 	var req request.CreateBooking
 	if err := json.NewDecoder(ctx.Request.Body).Decode(&req); err != nil {
+		log.Err(err).Msg("Error decoding request body")
 		ctx.JSON(http.StatusBadRequest, common.BaseResponse{Data: err.Error()})
 		return
 	}
+	log.Info().Msg("Decoded request body")
 
 	booking, err := h.service.CreateBooking(req.UserID, req.FlightID)
 	if err != nil {
+		log.Err(err).Msg("Error creating booking")
 		ctx.JSON(http.StatusInternalServerError, common.BaseResponse{Data: err.Error()})
 		return
 	}
 
+	log.Info().Msg("Created booking")
 	ctx.JSON(http.StatusOK, common.BaseResponse{Data: booking})
 	return
 }
@@ -61,6 +66,7 @@ func (h *BookingHandler) GetBooking(ctx *gin.Context) {
 
 	booking, err := h.service.GetBooking(id)
 	if err != nil {
+		log.Err(err).Msg("Error getting booking")
 		ctx.JSON(http.StatusInternalServerError, common.BaseResponse{Data: err.Error()})
 		return
 	}
@@ -86,6 +92,7 @@ func (h *BookingHandler) UpdateBookingStatus(ctx *gin.Context) {
 
 	booking, err := h.service.UpdateBookingStatus(id, status)
 	if err != nil {
+		log.Err(err).Msg("Error updating booking status")
 		ctx.JSON(http.StatusInternalServerError, common.BaseResponse{Data: err.Error()})
 		return
 	}
@@ -99,6 +106,7 @@ func (h *BookingHandler) CancelBooking(ctx *gin.Context) {
 
 	err := h.service.CancelBooking(id)
 	if err != nil {
+		log.Err(err).Msg("Error cancelling booking")
 		ctx.JSON(http.StatusInternalServerError, common.BaseResponse{Data: err.Error()})
 		return
 	}

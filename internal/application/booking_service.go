@@ -27,11 +27,18 @@ func (s *BookingServiceImpl) CreateBooking(userID, flightID string) (*domain.Boo
 	if err != nil {
 		return nil, err
 	}
+
 	return booking, nil
 }
 
 func (s *BookingServiceImpl) GetBooking(id string) (*domain.Booking, error) {
-	return s.repo.FindByID(id)
+
+	resp, err := s.repo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 func (s *BookingServiceImpl) UpdateBookingStatus(id string, status domain.BookingStatus) (*domain.Booking, error) {
@@ -39,12 +46,14 @@ func (s *BookingServiceImpl) UpdateBookingStatus(id string, status domain.Bookin
 	if err != nil {
 		return nil, err
 	}
+
 	booking.Status = status
 	booking.UpdatedAt = time.Now()
 	err = s.repo.Update(booking)
 	if err != nil {
 		return nil, err
 	}
+
 	return booking, nil
 }
 
@@ -53,8 +62,10 @@ func (s *BookingServiceImpl) CancelBooking(id string) error {
 	if err != nil {
 		return err
 	}
+
 	booking.Status = domain.Cancelled
 	booking.UpdatedAt = time.Now()
+
 	return s.repo.Update(booking)
 }
 

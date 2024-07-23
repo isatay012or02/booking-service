@@ -3,6 +3,7 @@ package repository
 import (
 	"booking-service/internal/domain"
 	"booking-service/internal/ports"
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -10,8 +11,14 @@ type BookingRepository struct {
 	db *gorm.DB
 }
 
-func NewBookingRepository(db *gorm.DB) ports.BookingRepository {
-	return &BookingRepository{db: db}
+func NewBookingRepository(db ports.DB) (ports.BookingRepository, error) {
+
+	dbImpl, ok := db.(*database)
+	if !ok {
+		return nil, errors.New("mock error")
+	}
+
+	return &BookingRepository{db: dbImpl.gormDB}, nil
 }
 
 func (r *BookingRepository) Save(booking *domain.Booking) error {
