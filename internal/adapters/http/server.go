@@ -4,6 +4,7 @@ import (
 	"booking-service/config"
 	"booking-service/internal/handlers"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gin-contrib/pprof"
 	"net/http"
@@ -28,7 +29,7 @@ type server struct {
 
 func (s *server) Start() (serverChannel chan error) {
 	go func() {
-		if err := s.srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			s.srvCh <- err
 		}
 	}()

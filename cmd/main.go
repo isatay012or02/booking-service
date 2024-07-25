@@ -13,9 +13,12 @@ import (
 )
 
 func main() {
-	//configuration, err := config.Init(config.DBSettings{}.ConnectionString)
+	configuration, err := config.Init("config.json")
+	if err != nil {
+		panic(err)
+	}
 
-	repoDB, err := repository.NewDB(config.DBSettings{})
+	repoDB, err := repository.NewDB(configuration.DB)
 	if err != nil {
 		panic(err)
 	}
@@ -29,7 +32,7 @@ func main() {
 
 	handler := handlers.NewBookingHandler(service)
 
-	srv, err := http.NewServer(&config.Config{}, handler)
+	srv, err := http.NewServer(configuration, handler)
 	if err != nil {
 		panic(err)
 	}
